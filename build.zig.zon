@@ -1,0 +1,14 @@
+.{
+    .name = .rosu_pp,
+    .version = "0.1.0",
+    .fingerprint = 0xe57008054e206e5d,
+    .minimum_zig_version = "0.16.0",
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "LICENSE",
+        "README.md",
+    },
+}
