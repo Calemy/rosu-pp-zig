@@ -13,5 +13,4 @@ pub fn build(b: *std.Build) void {
 
     mod.addLibraryPath(b.path("lib"));
     mod.linkSystemLibrary("rosu", .{});
-    mod.linkSystemLibrary("unwind", .{});
 }

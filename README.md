@@ -6,6 +6,9 @@ THIS IS NOT READY FOR PRODUCTION. IT DOES THE BARE MINIMUM AT THE MOMENT.
 
 Current rosu-pp version: 4.0.1
 
+It makes use of the new rosu-pp-ffi library created by @Badewanne3 and will stay compatible with it.
+
+I have been made aware of the lack of source code for the FFI. It will be added when this package is production ready with proper CI/CD.
 ---
 
 ##  How to use it
@@ -19,6 +22,8 @@ zig fetch --save git+"https://github.com/Calemy/rosu-pp-zig"
 ### Example
 
 Beatmaps currently are created from files. You'll be able to pass in the raw data in the future.
+
+UPDATE: THIS IS OUTDATED AND WILL BE UPDATED IN THE FUTURE. NON OF THIS IS CURRENTLY WORKING.
 
 ```zig
 const std = @import("std");

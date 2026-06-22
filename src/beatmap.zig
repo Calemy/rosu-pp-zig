@@ -1,32 +1,47 @@
-const calculator = @import("calculator.zig");
+const c = @import("c.zig").c;
 
-const CalculatorParams = calculator.CalculatorParams;
-const CalculatorResult = calculator.CalculatorResult;
+const Performance = @import("performance.zig").Performance;
+const rosu = @import("pp.zig");
+const FFIResult = rosu.FFIResult;
 
-pub const BeatmapHandle = opaque {};
+const BeatmapHandle = c.rosu_pp_BeatmapHandle;
 
-pub extern fn load_beatmap(path: [*:0]const u8) *BeatmapHandle;
-pub extern fn free_beatmap(handle: *BeatmapHandle) void;
-pub extern fn calculate_beatmap(handle: *BeatmapHandle, params: *CalculatorParams) *CalculatorResult;
+pub const Attributes = struct {
+    const Self = @This();
+    handle: ?*c.rosu_pp_BeatmapAttributesHandle,
+
+    pub fn deinit(self: Self) void {
+        c.rosu_pp_beatmap_attrs_free(self.handle);
+    }
+
+    pub fn free(self: Self) void {
+        c.rosu_pp_beatmap_attrs_free(self.handle);
+    }
+};
 
 pub const Beatmap = struct {
-    handle: *BeatmapHandle,
-
     const Self = @This();
+    handle: ?*c.rosu_pp_BeatmapHandle = null,
 
-    pub fn init(path: [*:0]const u8) Self {
-        return .{ .handle = load_beatmap(path) };
+    pub fn deinit(self: Self) void {
+        c.rosu_pp_BeatmapHandle.rosu_pp_beatmap_free(self.handle);
     }
 
-    pub fn calculate(self: *Self, params: *calculator.Params) *CalculatorResult {
-        return calculate_beatmap(self.handle, params.params);
+    pub fn fromPath(path: [*c]const u8) !Beatmap {
+        var handle: ?*BeatmapHandle = null;
+        const res: FFIResult = @enumFromInt(c.rosu_pp_beatmap_from_path(path, &handle));
+        try res.check();
+        return .{ .handle = handle };
     }
 
-    pub fn deinit(self: *Self) void {
-        return free_beatmap(self.handle);
+    pub fn fromBytes(bytes: [*c]const u8, len: usize) !Beatmap {
+        var handle: ?*BeatmapHandle = null;
+        const res: FFIResult = @enumFromInt(c.rosu_pp_beatmap_from_bytes(bytes, len, &handle));
+        try res.check();
+        return .{ .handle = handle };
     }
 
-    pub fn free(self: *Self) void {
-        return free_beatmap(self.handle);
+    pub fn newCalc(self: Self) Performance {
+        return .{ .handle = c.rosu_pp_performance_new(self.handle) };
     }
 };
