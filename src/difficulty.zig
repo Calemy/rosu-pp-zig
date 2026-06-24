@@ -46,3 +46,20 @@ pub const Attributes = extern struct {
         return .{ .handle = c.rosu_pp_performance_new_from_diff_attrs(self) };
     }
 };
+
+pub const Difficulty = struct {
+    const Self = @This();
+    handle: ?*c.rosu_pp_DifficultyHandle,
+
+    pub fn init() Difficulty {
+        return .{ .handle = c.rosu_pp_difficulty_new() };
+    }
+
+    pub fn deinit(self: Self) void {
+        c.rosu_pp_difficulty_free(self.handle);
+    }
+
+    pub fn free(self: Self) void {
+        c.rosu_pp_difficulty_free(self.handle);
+    }
+};
