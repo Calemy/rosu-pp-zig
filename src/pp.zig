@@ -22,3 +22,10 @@ pub const FFIResult = enum(c_uint) {
         };
     }
 };
+
+pub const GameMode = enum(c_uint) {
+    Osu = 0,
+    Taiko = 1,
+    Catch = 2,
+    Mania = 3,
+};
