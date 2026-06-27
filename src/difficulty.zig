@@ -1,5 +1,8 @@
 const c = @import("c.zig").c;
-const Performance = @import("performance.zig");
+const Performance = @import("performance.zig").Performance;
+const Mods = @import("mods.zig").Mods;
+const Beatmap = @import("beatmap.zig").Beatmap;
+const FFIResult = @import("pp.zig").FFIResult;
 
 pub const Attributes = extern struct {
     mode: i32 = 0,
@@ -42,7 +45,7 @@ pub const Attributes = extern struct {
     n_hold_notes: u32 = 0,
     is_convert: bool = false,
 
-    pub fn newCalc(self: @This()) Performance.Performance {
+    pub fn newCalc(self: @This()) Performance {
         return .{ .handle = c.rosu_pp_performance_new_from_diff_attrs(self) };
     }
 };
@@ -55,11 +58,123 @@ pub const Difficulty = struct {
         return .{ .handle = c.rosu_pp_difficulty_new() };
     }
 
+    pub fn clone(self: Self) Difficulty {
+        return .{ .handle = c.rosu_pp_difficulty_clone(self.handle) };
+    }
+
+    pub fn mods(self: Self, value: Mods) Difficulty {
+        _ = c.rosu_pp_difficulty_mods(self.handle, value);
+        return self;
+    }
+
+    pub fn objects(self: Self, value: u32) Difficulty {
+        _ = c.rosu_pp_difficulty_passed_objects(self.handle, value);
+        return self;
+    }
+
+    pub fn clockRate(self: Self, value: f64) Difficulty {
+        _ = c.rosu_pp_difficulty_clock_rate(self.handle, value);
+        return self;
+    }
+
+    pub fn ar(self: Self, value: f32, fixed: bool) Difficulty {
+        _ = c.rosu_pp_difficulty_ar(self.handle, value, fixed);
+        return self;
+    }
+
+    pub fn cs(self: Self, value: f32, fixed: bool) Difficulty {
+        _ = c.rosu_pp_difficulty_cs(self.handle, value, fixed);
+        return self;
+    }
+
+    pub fn hp(self: Self, value: f32, fixed: bool) Difficulty {
+        _ = c.rosu_pp_difficulty_hp(self.handle, value, fixed);
+        return self;
+    }
+    pub fn od(self: Self, value: f32, fixed: bool) Difficulty {
+        _ = c.rosu_pp_difficulty_od(self.handle, value, fixed);
+        return self;
+    }
+
+    pub fn hardrockOffset(self: Self, value: bool) Difficulty {
+        _ = c.rosu_pp_difficulty_hardrock_offsets(self.handle, value);
+        return self;
+    }
+
+    pub fn lazer(self: Self, value: bool) Difficulty {
+        _ = c.rosu_pp_difficulty_lazer(self.handle, value);
+        return self;
+    }
+
+    // If someone passes an empty Beatmap struct, they deserve to suffer for their idiocy.
+
+    pub fn calculate(self: Self, beatmap: Beatmap) Attributes {
+        var attr = Attributes{};
+        const result: FFIResult = @enumFromInt(c.rosu_pp_difficulty_calculate(self.handle, beatmap.handle, @ptrCast(&attr)));
+        try result.check();
+        return attr;
+    }
+
+    pub fn checkedCalculate(self: Self, beatmap: Beatmap) error{TooSuspicious}!Attributes {
+        var attr = Attributes{};
+        const result: FFIResult = @enumFromInt(c.rosu_pp_difficulty_checked_calculate(self.handle, beatmap.handle, @ptrCast(&attr)));
+        try result.check();
+        return attr;
+    }
+
+    pub fn strains(self: Self, beatmap: Beatmap) Strain {
+        var strain: *Strain = undefined;
+        strain = @ptrCast(c.rosu_pp_difficulty_strains(self.handle, beatmap.handle));
+        return strain.*;
+    }
+
+    /// Consumes handle and returns `Inspect` struct. `Inspect` must be free'd seperately.
+    pub fn inspect(self: Self) Inspect {
+        return .{ .handle = c.rosu_pp_difficulty_inspect_new(self.handle) };
+    }
+
     pub fn deinit(self: Self) void {
         c.rosu_pp_difficulty_free(self.handle);
     }
 
     pub fn free(self: Self) void {
         c.rosu_pp_difficulty_free(self.handle);
+    }
+};
+
+pub const Inspect = struct {
+    const Self = @This();
+    handle: ?*c.rosu_pp_InspectDifficultyHandle,
+
+    pub fn deinit(self: Self) void {
+        c.rosu_pp_inspect_difficulty_free(self.handle);
+    }
+
+    pub fn free(self: Self) void {
+        c.rosu_pp_inspect_difficulty_free(self.handle);
+    }
+};
+
+pub const Strain = extern struct {
+    mode: i32 = 0,
+    section_len: f64 = 0,
+    len: usize = 0,
+    aim: [*c]const f64 = null,
+    aim_no_sliders: [*c]const f64 = null,
+    speed: [*c]const f64 = null,
+    flashlight: [*c]const f64 = null,
+    stamina: [*c]const f64 = null,
+    rhythm: [*c]const f64 = null,
+    color: [*c]const f64 = null,
+    reading: [*c]const f64 = null,
+    single_color_stamina: [*c]const f64 = null,
+    movement: [*c]const f64 = null,
+    strains: [*c]const f64 = null,
+
+    pub fn deinit(self: @This()) void {
+        c.rosu_pp_strains_free(@ptrCast(self));
+    }
+    pub fn free(self: @This()) void {
+        c.rosu_pp_strains_free(@ptrCast(self));
     }
 };

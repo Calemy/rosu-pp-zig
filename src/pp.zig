@@ -2,6 +2,8 @@ pub const Beatmap = @import("beatmap.zig");
 pub const Performance = @import("performance.zig");
 pub const Difficulty = @import("difficulty.zig");
 
+pub const TooSuspicious = error.TooSuspicious;
+
 pub const FFIResult = enum(c_uint) {
     Ok = 0,
     Done = 1,
