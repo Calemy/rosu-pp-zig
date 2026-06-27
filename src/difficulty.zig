@@ -1,5 +1,6 @@
 const c = @import("c.zig").c;
-const Performance = @import("performance.zig").Performance;
+const Performance = @import("performance.zig");
+const Score = @import("score.zig");
 const Mods = @import("mods.zig").Mods;
 const Beatmap = @import("beatmap.zig").Beatmap;
 const FFIResult = @import("pp.zig").FFIResult;
@@ -45,7 +46,7 @@ pub const Attributes = extern struct {
     n_hold_notes: u32 = 0,
     is_convert: bool = false,
 
-    pub fn newCalc(self: @This()) Performance {
+    pub fn newCalc(self: @This()) Performance.Performance {
         return .{ .handle = c.rosu_pp_performance_new_from_diff_attrs(self) };
     }
 };
@@ -128,6 +129,11 @@ pub const Difficulty = struct {
         return strain.*;
     }
 
+    pub fn gradualPerformance(self: Self, beatmap: Beatmap) Performance.Gradual {
+        // TODO: Call Performance.Gradual.init() instead?
+        return .{ .handle = c.rosu_pp_gradual_performance_new(self.handle, beatmap.handle) };
+    }
+
     /// Consumes handle and returns `Inspect` struct. `Inspect` must be free'd seperately.
     pub fn inspect(self: Self) Inspect {
         return .{ .handle = c.rosu_pp_difficulty_inspect_new(self.handle) };
@@ -152,6 +158,34 @@ pub const Inspect = struct {
 
     pub fn free(self: Self) void {
         c.rosu_pp_inspect_difficulty_free(self.handle);
+    }
+};
+
+const Iterator = struct {
+    value: Attributes,
+    done: bool,
+};
+
+pub const Gradual = struct {
+    const Self = @This();
+    handle: ?*c.rosu_pp_GradualDifficultyHandle,
+
+    pub fn init(difficulty: Difficulty, beatmap: Beatmap) Gradual {
+        return .{ .handle = c.rosu_pp_gradual_difficulty_new(difficulty.handle, beatmap.handle) };
+    }
+
+    pub fn deinit(self: Self) void {
+        c.rosu_pp_gradual_difficulty_free(self.handle);
+    }
+
+    pub fn free(self: Self) void {
+        c.rosu_pp_gradual_difficulty_free(self.handle);
+    }
+
+    pub fn next(self: Self) Iterator {
+        var attr = Attributes{};
+        const result: FFIResult = @enumFromInt(c.rosu_pp_gradual_difficulty_next(self.handle, @ptrCast(&attr)));
+        return .{ .value = attr, .done = result == .Done };
     }
 };
 

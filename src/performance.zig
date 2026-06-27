@@ -3,6 +3,7 @@ const std = @import("std");
 
 const Beatmap = @import("beatmap.zig");
 const Difficulty = @import("difficulty.zig");
+const Score = @import("score.zig");
 const rosu = @import("pp.zig");
 
 const Handle = c.rosu_pp_PerformanceHandle;
@@ -46,5 +47,46 @@ pub const Performance = struct {
         var attr: Attributes = std.mem.zeroes(Attributes);
         _ = Handle.rosu_pp_performance_calculate(self.handle, @ptrCast(&attr));
         return attr;
+    }
+
+    /// Calculates performing map suspicion checks. If called you no longer require to deinit.
+    pub fn calculateSafe(self: Self) error{TooSuspicious}!Attributes {
+        var attr: Attributes = std.mem.zeroes(Attributes);
+        const result: FFIResult = @enumFromInt(Handle.rosu_pp_performance_checked_calculate(self.handle, @ptrCast(&attr)));
+        if (result == .TooSuspicious) return error.TooSuspicious;
+        return attr;
+    }
+
+    pub fn state(self: Self, score: Score.State) Performance {
+        _ = c.rosu_pp_performance_state(self.handle, @ptrCast(&score));
+        return self;
+    }
+};
+
+const Iterator = struct {
+    value: Attributes,
+    done: bool,
+};
+
+pub const Gradual = struct {
+    const Self = @This();
+    handle: ?*Handle,
+
+    pub fn init(difficulty: Difficulty.Difficulty, beatmap: Beatmap.Beatmap) Gradual {
+        return .{ .handle = c.rosu_pp_gradual_difficulty_new(difficulty.handle, beatmap.handle) };
+    }
+
+    pub fn deinit(self: Self) void {
+        c.rosu_pp_gradual_performance_free(self.handle);
+    }
+
+    pub fn free(self: Self) void {
+        c.rosu_pp_gradual_performance_free(self.handle);
+    }
+
+    pub fn next(self: Self, score: Score.State) Iterator {
+        var attr = Attributes{};
+        const result: FFIResult = @enumFromInt(c.rosu_pp_gradual_performance_next(self.handle, @ptrCast(&score), @ptrCast(&attr)));
+        return .{ .value = attr, .done = result == .Done };
     }
 };
