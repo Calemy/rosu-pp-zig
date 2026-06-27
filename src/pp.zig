@@ -1,3 +1,4 @@
+const c = @import("c.zig").c;
 pub const Beatmap = @import("beatmap.zig");
 pub const Performance = @import("performance.zig");
 pub const Difficulty = @import("difficulty.zig");
@@ -30,4 +31,11 @@ pub const GameMode = enum(c_uint) {
     Taiko = 1,
     Catch = 2,
     Mania = 3,
+
+    pub fn fromString(s: c_char) error{InvalidArgument}!GameMode {
+        var num: c_uint = null;
+        const result: FFIResult = @enumFromInt(c.rosu_pp_mode_from_str(s, &num));
+        if (result == .InvalidArgument) return error.InvalidArgument;
+        return @enumFromInt(num);
+    }
 };
