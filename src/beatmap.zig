@@ -24,57 +24,48 @@ pub const AttributesBuilder = struct {
         c.rosu_pp_beatmap_attrs_builder_free(self);
     }
 
-    pub fn map(self: Self, value: Beatmap) !AttributesBuilder {
-        const result: FFIResult = @enumFromInt(c.rosu_pp_beatmap_attrs_builder_map(self.handle, value.handle));
-        try result.check();
+    pub fn map(self: Self, value: Beatmap) AttributesBuilder {
+        _ = c.rosu_pp_beatmap_attrs_builder_map(self.handle, value.handle);
         return self;
     }
 
-    pub fn ar(self: Self, value: f32, fixed: bool) !AttributesBuilder {
-        const result: FFIResult = @enumFromInt(c.rosu_pp_beatmap_attrs_builder_ar(self.handle, value, fixed));
-        try result.check();
+    pub fn ar(self: Self, value: f32, fixed: bool) AttributesBuilder {
+        _ = c.rosu_pp_beatmap_attrs_builder_ar(self.handle, value, fixed);
         return self;
     }
 
-    pub fn od(self: Self, value: f32, fixed: bool) !AttributesBuilder {
-        const result: FFIResult = @enumFromInt(c.rosu_pp_beatmap_attrs_builder_od(self.handle, value, fixed));
-        try result.check();
+    pub fn od(self: Self, value: f32, fixed: bool) AttributesBuilder {
+        _ = c.rosu_pp_beatmap_attrs_builder_od(self.handle, value, fixed);
         return self;
     }
 
-    pub fn cs(self: Self, value: f32, fixed: bool) !AttributesBuilder {
-        const result: FFIResult = @enumFromInt(c.rosu_pp_beatmap_attrs_builder_cs(self.handle, value, fixed));
-        try result.check();
+    pub fn cs(self: Self, value: f32, fixed: bool) AttributesBuilder {
+        _ = c.rosu_pp_beatmap_attrs_builder_cs(self.handle, value, fixed);
         return self;
     }
 
-    pub fn hp(self: Self, value: f32, fixed: bool) !AttributesBuilder {
-        const result: FFIResult = @enumFromInt(c.rosu_pp_beatmap_attrs_builder_hp(self.handle, value, fixed));
-        try result.check();
+    pub fn hp(self: Self, value: f32, fixed: bool) AttributesBuilder {
+        _ = c.rosu_pp_beatmap_attrs_builder_hp(self.handle, value, fixed);
         return self;
     }
 
-    pub fn mods(self: Self, value: Mods) !AttributesBuilder {
-        const result: FFIResult = @enumFromInt(c.rosu_pp_beatmap_attrs_builder_mods(self.handle, value.handle));
-        try result.check();
+    pub fn mods(self: Self, value: Mods) AttributesBuilder {
+        _ = c.rosu_pp_beatmap_attrs_builder_mods(self.handle, value.handle);
         return self;
     }
 
-    pub fn clockRate(self: Self, value: f64) !AttributesBuilder {
-        const result: FFIResult = @enumFromInt(c.rosu_pp_beatmap_attrs_builder_hp(self.handle, value));
-        try result.check();
+    pub fn clockRate(self: Self, value: f64) AttributesBuilder {
+        _ = c.rosu_pp_beatmap_attrs_builder_hp(self.handle, value);
         return self;
     }
 
-    pub fn mode(self: Self, value: rosu.GameMode, isConvert: bool) !AttributesBuilder {
-        const result: FFIResult = @enumFromInt(c.rosu_pp_beatmap_attrs_builder_mode(self.handle, value, isConvert));
-        try result.check();
+    pub fn mode(self: Self, value: rosu.GameMode, isConvert: bool) AttributesBuilder {
+        _ = c.rosu_pp_beatmap_attrs_builder_mode(self.handle, value, isConvert);
         return self;
     }
 
-    pub fn difficulty(self: Self, value: Difficulty) !AttributesBuilder {
-        const result: FFIResult = @enumFromInt(c.rosu_pp_beatmap_attrs_builder_difficulty(self.handle, value.handle));
-        try result.check();
+    pub fn difficulty(self: Self, value: Difficulty) AttributesBuilder {
+        c.rosu_pp_beatmap_attrs_builder_difficulty(self.handle, value.handle);
         return self;
     }
 

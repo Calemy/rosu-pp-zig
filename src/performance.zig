@@ -41,10 +41,10 @@ pub const Performance = struct {
         c.rosu_pp_performance_free(self.handle);
     }
 
-    pub fn calc(self: Self) !Attributes {
+    /// If called you no longer require to deinit.
+    pub fn calculate(self: Self) Attributes {
         var attr: Attributes = std.mem.zeroes(Attributes);
-        const result: FFIResult = @enumFromInt(Handle.calculate(self.handle, @ptrCast(&attr)));
-        try result.check();
+        _ = Handle.rosu_pp_performance_calculate(self.handle, @ptrCast(&attr));
         return attr;
     }
 };

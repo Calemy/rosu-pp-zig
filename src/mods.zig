@@ -7,7 +7,11 @@ pub const Mods = struct {
     const Self = @This();
     handle: ?*c.rosu_pp_ModsHandle,
 
-    pub fn fromAcronym(value: [*c]const u8) !Mods {
+    pub fn fromBits(value: [*c]const u8) Mods {
+        return .{ .handle = c.rosu_pp_mods_from_bits(value) };
+    }
+
+    pub fn fromAcronym(value: [*c]const u8) error{ParseError}!Mods {
         var mods = Mods{ .handle = null };
         const result: FFIResult = @enumFromInt(c.rosu_pp_mods_from_acronym(value, &mods.handle));
         try result.check();
@@ -15,18 +19,14 @@ pub const Mods = struct {
         return mods;
     }
 
-    pub fn fromBits(value: [*c]const u8) Mods {
-        return .{ .handle = c.rosu_pp_mods_from_bits(value) };
-    }
-
-    pub fn fromJson(value: [*c]const u8, denyUnknownFields: bool) !Mods {
+    pub fn fromJson(value: [*c]const u8, denyUnknownFields: bool) error{ParseError}!Mods {
         var mods = Mods{ .handle = null };
         const result: FFIResult = @enumFromInt(c.rosu_pp_mods_from_json(value, denyUnknownFields, &mods.handle));
         try result.check();
         return mods;
     }
 
-    pub fn fromJsonWithMode(value: [*c]const u8, denyUnknownFields: bool, mode: rosu.GameMode) !Mods {
+    pub fn fromJsonWithMode(value: [*c]const u8, denyUnknownFields: bool, mode: rosu.GameMode) error{ParseError}!Mods {
         var mods = Mods{ .handle = null };
         const result: FFIResult = @enumFromInt(c.rosu_pp_mods_from_json_with_mode(value, denyUnknownFields, mode, &mods.handle));
         try result.check();
