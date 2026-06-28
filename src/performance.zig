@@ -26,7 +26,7 @@ pub const Attributes = extern struct {
     estimated_unstable_rate: f64 = 0,
     difficulty: Difficulty.Attributes = std.mem.zeroes(Difficulty.Attributes),
 
-    pub fn newCalc(self: @This()) Performance {
+    pub fn calculator(self: @This()) Performance {
         return .{ .handle = c.rosu_pp_performance_new_from_attrs(@ptrCast(&self)) };
     }
 };

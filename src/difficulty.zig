@@ -46,7 +46,7 @@ pub const Attributes = extern struct {
     n_hold_notes: u32 = 0,
     is_convert: bool = false,
 
-    pub fn newCalc(self: @This()) Performance.Performance {
+    pub fn calculator(self: @This()) Performance.Performance {
         return .{ .handle = c.rosu_pp_performance_new_from_diff_attrs(self) };
     }
 };
