@@ -74,9 +74,37 @@ pub const AttributesBuilder = struct {
     }
 };
 
+const Adjusted = extern struct {
+    ar: f64 = 0,
+    cs: f32 = 0,
+    hp: f32 = 0,
+    od: f64 = 0,
+};
+
+const HitWindows = extern struct {
+    ar: f64 = 0,
+    od_perfect: f64 = 0,
+    od_great: f64 = 0,
+    od_good: f64 = 0,
+    od_ok: f64 = 0,
+    od_meh: f64 = 0,
+};
+
 pub const Attributes = struct {
     const Self = @This();
     handle: ?*c.rosu_pp_BeatmapAttributesHandle,
+
+    pub fn applyClockRate(self: Self) Adjusted {
+        var attr = Adjusted{};
+        _ = c.rosu_pp_beatmap_attrs_apply_clock_rate(self.handle, @ptrCast(&attr));
+        return attr;
+    }
+
+    pub fn hitWindows(self: Self) HitWindows {
+        var hw = HitWindows{};
+        _ = c.rosu_pp_beatmap_attrs_hit_windows(self.handle, @ptrCast(&hw));
+        return hw;
+    }
 
     pub fn deinit(self: Self) void {
         c.rosu_pp_beatmap_attrs_free(self.handle);
