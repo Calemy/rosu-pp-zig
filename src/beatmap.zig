@@ -69,7 +69,7 @@ pub const AttributesBuilder = struct {
         return self;
     }
 
-    pub fn build(self: *Self) Attributes {
+    pub fn build(self: Self) Attributes {
         return .{ .handle = c.rosu_pp_beatmap_attrs_builder_build(self.handle) };
     }
 };

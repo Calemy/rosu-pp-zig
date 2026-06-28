@@ -2,6 +2,8 @@ const c = @import("c.zig").c;
 pub const Beatmap = @import("beatmap.zig");
 pub const Performance = @import("performance.zig");
 pub const Difficulty = @import("difficulty.zig");
+pub const Score = @import("score.zig");
+pub const Mods = @import("mods.zig").Mods;
 
 pub const TooSuspicious = error.TooSuspicious;
 

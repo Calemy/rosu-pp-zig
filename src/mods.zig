@@ -7,7 +7,7 @@ pub const Mods = struct {
     const Self = @This();
     handle: ?*c.rosu_pp_ModsHandle,
 
-    pub fn fromBits(value: [*c]const u8) Mods {
+    pub fn fromBits(value: u32) Mods {
         return .{ .handle = c.rosu_pp_mods_from_bits(value) };
     }
 

@@ -27,7 +27,7 @@ pub const Attributes = extern struct {
     difficulty: Difficulty.Attributes = std.mem.zeroes(Difficulty.Attributes),
 
     pub fn newCalc(self: @This()) Performance {
-        return .{ .handle = c.rosu_pp_performance_new_from_attrs(self) };
+        return .{ .handle = c.rosu_pp_performance_new_from_attrs(@ptrCast(&self)) };
     }
 };
 
@@ -94,7 +94,7 @@ pub const Performance = struct {
     }
 
     pub fn accuracy(self: Self, value: f64) Performance {
-        _ = c.rosu_pp_performance_ar(self.handle, value);
+        _ = c.rosu_pp_performance_accuracy(self.handle, value);
         return self;
     }
 
@@ -135,6 +135,16 @@ pub const Performance = struct {
 
     pub fn n50(self: Self, value: u32) Performance {
         _ = c.rosu_pp_performance_n50(self.handle, value);
+        return self;
+    }
+
+    pub fn geki(self: Self, value: u32) Performance {
+        _ = c.rosu_pp_performance_n_geki(self.handle, value);
+        return self;
+    }
+
+    pub fn katu(self: Self, value: u32) Performance {
+        _ = c.rosu_pp_performance_n_katu(self.handle, value);
         return self;
     }
 
