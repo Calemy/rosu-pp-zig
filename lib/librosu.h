@@ -1954,6 +1954,27 @@ enum rosu_pp_FfiResult rosu_pp_beatmap_check_suspicion(const struct rosu_pp_Beat
 enum rosu_pp_FfiResult rosu_pp_difficulty_od(struct rosu_pp_DifficultyHandle *handle, float od, bool fixed);
 
 /**
+ * Clone a `StrainsData` struct.
+ *
+ * Performs a deep copy - all strain arrays are independently allocated.
+ * The returned struct is fully independent; free it with
+ * `rosu_pp_strains_free`.
+ *
+ * **Parameters:**
+ * - `strains`: A valid `StrainsData` pointer (may be null).
+ *
+ * **Returns:** A non-null heap-allocated copy on success, or `NULL` if `strains` is null.
+ *
+ * **Memory:** The caller owns the returned pointer and must free it with
+ * `rosu_pp_strains_free`.
+ *
+ * # Safety
+ *
+ * `strains` must be a valid pointer to a `StrainsData` struct, or null.
+ */
+struct rosu_pp_StrainsData *rosu_pp_strains_data_clone(const struct rosu_pp_StrainsData *strains);
+
+/**
  *  Amount of passed objects for partial plays, e.g. a fail.
  *
  *  **Parameters:**
@@ -2033,22 +2054,6 @@ enum rosu_pp_FfiResult rosu_pp_beatmap_attrs_builder_mods(struct rosu_pp_Beatmap
 enum rosu_pp_FfiResult rosu_pp_performance_clock_rate(struct rosu_pp_PerformanceHandle *handle, double clock_rate);
 
 /**
- * Free a beatmap handle and release its memory.
- *
- * **Parameters:**
- * - `handle`: A handle returned by `rosu_pp_beatmap_from_path` or
- *   `rosu_pp_beatmap_from_bytes`. May be null (null is a no-op).
- *
- * After calling this function, the handle must NOT be used again.
- *
- * # Safety
- *
- * `handle` must be a null pointer, or a valid handle previously returned by
- * `rosu_pp_beatmap_from_path` or `rosu_pp_beatmap_from_bytes`.
- */
-void rosu_pp_beatmap_free(struct rosu_pp_BeatmapHandle *handle);
-
-/**
  *  Adjust patterns as if the HR mod is enabled.
  *
  *  Only relevant for osu!catch.
@@ -2067,6 +2072,25 @@ void rosu_pp_beatmap_free(struct rosu_pp_BeatmapHandle *handle);
  * `handle` must be a valid pointer to a `DifficultyHandle`, or null.
  */
 enum rosu_pp_FfiResult rosu_pp_difficulty_hardrock_offsets(struct rosu_pp_DifficultyHandle *handle, bool hardrock_offsets);
+
+/**
+ * Clone a `BeatmapHandle`.
+ *
+ * Creates a new independent handle with the same beatmap data.
+ *
+ * **Parameters:**
+ * - `handle`: A valid `BeatmapHandle` pointer (may be null).
+ *
+ * **Returns:** A non-null handle on success, or `NULL` if `handle` is null.
+ *
+ * **Memory:** The caller owns the returned handle and must free it with
+ * `rosu_pp_beatmap_free`.
+ *
+ * # Safety
+ *
+ * `handle` must be a valid pointer to a `BeatmapHandle`, or null.
+ */
+struct rosu_pp_BeatmapHandle *rosu_pp_beatmap_clone(const struct rosu_pp_BeatmapHandle *handle);
 
 /**
  * Convert a mods handle to legacy bitflags.
@@ -2148,6 +2172,22 @@ enum rosu_pp_FfiResult rosu_pp_difficulty_lazer(struct rosu_pp_DifficultyHandle 
  * `handle` must be a valid pointer to a `PerformanceHandle`, or null.
  */
 enum rosu_pp_FfiResult rosu_pp_performance_cs(struct rosu_pp_PerformanceHandle *handle, float cs, bool fixed);
+
+/**
+ * Free a beatmap handle and release its memory.
+ *
+ * **Parameters:**
+ * - `handle`: A handle returned by `rosu_pp_beatmap_from_path` or
+ *   `rosu_pp_beatmap_from_bytes`. May be null (null is a no-op).
+ *
+ * After calling this function, the handle must NOT be used again.
+ *
+ * # Safety
+ *
+ * `handle` must be a null pointer, or a valid handle previously returned by
+ * `rosu_pp_beatmap_from_path` or `rosu_pp_beatmap_from_bytes`.
+ */
+void rosu_pp_beatmap_free(struct rosu_pp_BeatmapHandle *handle);
 
 /**
  * Set a custom clock rate.
@@ -2333,21 +2373,6 @@ enum rosu_pp_FfiResult rosu_pp_performance_hardrock_offsets(struct rosu_pp_Perfo
 enum rosu_pp_FfiResult rosu_pp_performance_lazer(struct rosu_pp_PerformanceHandle *handle, bool lazer);
 
 /**
- * Free a mods handle and release its memory.
- *
- * **Parameters:**
- * - `handle`: A handle returned by `rosu_pp_mods_from_acronym`,
- *   `rosu_pp_mods_from_json`, `rosu_pp_mods_from_json_with_mode`, or
- *   `rosu_pp_mods_from_bits`. May be null (null is a no-op).
- *
- * # Safety
- *
- * `handle` must be a null pointer, or a valid handle previously returned by
- * a mods constructor function.
- */
-void rosu_pp_mods_free(struct rosu_pp_ModsHandle *handle);
-
-/**
  * Calculate difficulty attributes for the configured settings after verifying
  * the map is not too suspicious.
  *
@@ -2375,6 +2400,25 @@ void rosu_pp_mods_free(struct rosu_pp_ModsHandle *handle);
  * `out` must point to a valid `DifficultyAttributes` struct, or be null.
  */
 enum rosu_pp_FfiResult rosu_pp_difficulty_checked_calculate(struct rosu_pp_DifficultyHandle *handle, const struct rosu_pp_BeatmapHandle *map, struct rosu_pp_DifficultyAttributes *out);
+
+/**
+ * Clone a `ModsHandle`.
+ *
+ * Creates a new independent handle with the same mods configuration.
+ *
+ * **Parameters:**
+ * - `handle`: A valid `ModsHandle` pointer (may be null).
+ *
+ * **Returns:** A non-null handle on success, or `NULL` if `handle` is null.
+ *
+ * **Memory:** The caller owns the returned handle and must free it with
+ * `rosu_pp_mods_free`.
+ *
+ * # Safety
+ *
+ * `handle` must be a valid pointer to a `ModsHandle`, or null.
+ */
+struct rosu_pp_ModsHandle *rosu_pp_mods_clone(const struct rosu_pp_ModsHandle *handle);
 
 /**
  *  Set the accuracy between `0.0` and `100.0`.
@@ -2451,6 +2495,21 @@ enum rosu_pp_FfiResult rosu_pp_performance_misses(struct rosu_pp_PerformanceHand
  * `handle` must be a valid pointer to a `PerformanceHandle`, or null.
  */
 enum rosu_pp_FfiResult rosu_pp_performance_combo(struct rosu_pp_PerformanceHandle *handle, uint32_t combo);
+
+/**
+ * Free a mods handle and release its memory.
+ *
+ * **Parameters:**
+ * - `handle`: A handle returned by `rosu_pp_mods_from_acronym`,
+ *   `rosu_pp_mods_from_json`, `rosu_pp_mods_from_json_with_mode`, or
+ *   `rosu_pp_mods_from_bits`. May be null (null is a no-op).
+ *
+ * # Safety
+ *
+ * `handle` must be a null pointer, or a valid handle previously returned by
+ * a mods constructor function.
+ */
+void rosu_pp_mods_free(struct rosu_pp_ModsHandle *handle);
 
 /**
  *  Specify the amount of "large tick" hits.
@@ -2681,6 +2740,25 @@ enum rosu_pp_FfiResult rosu_pp_performance_n50(struct rosu_pp_PerformanceHandle 
 enum rosu_pp_FfiResult rosu_pp_performance_n_geki(struct rosu_pp_PerformanceHandle *handle, uint32_t n_geki);
 
 /**
+ * Clone a `BeatmapAttributesBuilderHandle`.
+ *
+ * Creates a new independent builder with the same configuration.
+ *
+ * **Parameters:**
+ * - `handle`: A valid `BeatmapAttributesBuilderHandle` pointer (may be null).
+ *
+ * **Returns:** A non-null handle on success, or `NULL` if `handle` is null.
+ *
+ * **Memory:** The caller owns the returned handle and must free it with
+ * `rosu_pp_beatmap_attrs_builder_free`.
+ *
+ * # Safety
+ *
+ * `handle` must be a valid pointer to a `BeatmapAttributesBuilderHandle`, or null.
+ */
+struct rosu_pp_BeatmapAttributesBuilderHandle *rosu_pp_beatmap_attrs_builder_clone(const struct rosu_pp_BeatmapAttributesBuilderHandle *handle);
+
+/**
  *  Specify the amount of katus of a play.
  *
  *  Only relevant for osu!catch for which it represents the amount of tiny
@@ -2827,3 +2905,23 @@ enum rosu_pp_FfiResult rosu_pp_performance_calculate(struct rosu_pp_PerformanceH
  * `rosu_pp_performance_new`.
  */
 void rosu_pp_performance_free(struct rosu_pp_PerformanceHandle *handle);
+
+/**
+ * Clone a `PerformanceHandle`.
+ *
+ * Creates a new independent handle with the same configuration. The clone
+ * can be used with `rosu_pp_performance_calculate` just like the original.
+ *
+ * **Parameters:**
+ * - `handle`: A valid `PerformanceHandle` pointer (may be null).
+ *
+ * **Returns:** A non-null handle on success, or `NULL` if `handle` is null.
+ *
+ * **Memory:** The caller owns the returned handle and must free it with
+ * `rosu_pp_performance_free`.
+ *
+ * # Safety
+ *
+ * `handle` must be a valid pointer to a `PerformanceHandle`, or null.
+ */
+struct rosu_pp_PerformanceHandle *rosu_pp_performance_clone(const struct rosu_pp_PerformanceHandle *handle);
