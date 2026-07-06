@@ -59,6 +59,7 @@ pub const Difficulty = struct {
         return .{ .handle = c.rosu_pp_difficulty_new() };
     }
 
+    /// Clones the current attributes and returns a new `Difficulty` instance. Must be free'd seperately.
     pub fn clone(self: Self) Difficulty {
         return .{ .handle = c.rosu_pp_difficulty_clone(self.handle) };
     }
@@ -111,8 +112,7 @@ pub const Difficulty = struct {
 
     pub fn calculate(self: Self, beatmap: Beatmap) Attributes {
         var attr = Attributes{};
-        const result: FFIResult = @enumFromInt(c.rosu_pp_difficulty_calculate(self.handle, beatmap.handle, @ptrCast(&attr)));
-        try result.check();
+        _ = c.rosu_pp_difficulty_calculate(self.handle, beatmap.handle, @ptrCast(&attr));
         return attr;
     }
 
@@ -190,6 +190,7 @@ pub const Gradual = struct {
 };
 
 pub const Strain = extern struct {
+    const Self = @This();
     mode: i32 = 0,
     section_len: f64 = 0,
     len: usize = 0,
@@ -205,10 +206,14 @@ pub const Strain = extern struct {
     movement: [*c]const f64 = null,
     strains: [*c]const f64 = null,
 
-    pub fn deinit(self: @This()) void {
+    pub fn clone(self: Self) Strain {
+        return c.rosu_pp_strains_data_clone(self.handle);
+    }
+
+    pub fn deinit(self: Self) void {
         c.rosu_pp_strains_free(@ptrCast(self));
     }
-    pub fn free(self: @This()) void {
+    pub fn free(self: Self) void {
         c.rosu_pp_strains_free(@ptrCast(self));
     }
 };

@@ -40,6 +40,10 @@ pub const Performance = struct {
     const Self = @This();
     handle: ?*Handle,
 
+    pub fn clone(self: Self) Performance {
+        return .{ .handle = c.rosu_pp_performance_clone(self.handle) };
+    }
+
     pub fn deinit(self: Self) void {
         c.rosu_pp_performance_free(self.handle);
     }

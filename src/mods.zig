@@ -33,6 +33,10 @@ pub const Mods = struct {
         return mods;
     }
 
+    pub fn clone(self: Self) Mods {
+        return .{ .handle = c.rosu_pp_mods_clone(self.handle) };
+    }
+
     pub fn deinit(self: Self) void {
         c.rosu_pp_mods_free(self.handle);
     }

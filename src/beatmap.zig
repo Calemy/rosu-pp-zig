@@ -16,6 +16,10 @@ pub const AttributesBuilder = struct {
         return .{ .handle = c.rosu_pp_beatmap_attrs_builder_new() };
     }
 
+    pub fn clone(self: Self) AttributesBuilder {
+        return .{ .handle = c.rosu_pp_beatmap_attrs_builder_clone(self.handle) };
+    }
+
     pub fn deinit(self: Self) void {
         c.rosu_pp_beatmap_attrs_builder_free(self);
     }
@@ -139,8 +143,16 @@ pub const Beatmap = struct {
     const Self = @This();
     handle: ?*c.rosu_pp_BeatmapHandle = null,
 
+    pub fn clone(self: Self) Beatmap {
+        return .{ .handle = c.rosu_pp_beatmap_clone(self.handle) };
+    }
+
     pub fn deinit(self: Self) void {
-        c.rosu_pp_BeatmapHandle.rosu_pp_beatmap_free(self.handle);
+        c.rosu_pp_beatmap_free(self.handle);
+    }
+
+    pub fn free(self: Self) void {
+        c.rosu_pp_beatmap_free(self.handle);
     }
 
     pub fn fromPath(path: [*c]const u8) !Beatmap {
