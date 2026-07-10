@@ -21,11 +21,11 @@ pub const AttributesBuilder = struct {
     }
 
     pub fn deinit(self: Self) void {
-        c.rosu_pp_beatmap_attrs_builder_free(self);
+        c.rosu_pp_beatmap_attrs_builder_free(self.handle);
     }
 
     pub fn free(self: Self) void {
-        c.rosu_pp_beatmap_attrs_builder_free(self);
+        c.rosu_pp_beatmap_attrs_builder_free(self.handle);
     }
 
     pub fn map(self: Self, value: Beatmap) AttributesBuilder {
