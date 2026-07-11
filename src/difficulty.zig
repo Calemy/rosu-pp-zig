@@ -207,7 +207,7 @@ pub const Strain = extern struct {
     strains: [*c]const f64 = null,
 
     pub fn clone(self: Self) Strain {
-        return c.rosu_pp_strains_data_clone(self.handle);
+        return c.rosu_pp_strains_data_clone(@ptrCast(self));
     }
 
     pub fn deinit(self: Self) void {
