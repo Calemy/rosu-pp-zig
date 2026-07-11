@@ -193,7 +193,7 @@ pub const Gradual = struct {
     handle: ?*Handle,
 
     pub fn init(difficulty: Difficulty.Difficulty, beatmap: Beatmap.Beatmap) Gradual {
-        return .{ .handle = c.rosu_pp_gradual_difficulty_new(difficulty.handle, beatmap.handle) };
+        return .{ .handle = c.rosu_pp_gradual_performance_new(difficulty.handle, beatmap.handle) };
     }
 
     pub fn deinit(self: Self) void {
