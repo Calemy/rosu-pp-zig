@@ -11,6 +11,8 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
+    mod.addIncludePath(b.path("lib"));
     mod.addLibraryPath(b.path("lib"));
     mod.linkSystemLibrary("rosu", .{});
+    mod.link_libc = true;
 }
