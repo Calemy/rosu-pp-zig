@@ -65,7 +65,7 @@ pub const Difficulty = struct {
     }
 
     pub fn mods(self: Self, value: Mods) Difficulty {
-        _ = c.rosu_pp_difficulty_mods(self.handle, value);
+        _ = c.rosu_pp_difficulty_mods(self.handle, value.handle);
         return self;
     }
 
