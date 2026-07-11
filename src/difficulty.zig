@@ -116,7 +116,7 @@ pub const Difficulty = struct {
         return attr;
     }
 
-    pub fn checkedCalculate(self: Self, beatmap: Beatmap) error{TooSuspicious}!Attributes {
+    pub fn calculateSafe(self: Self, beatmap: Beatmap) error{TooSuspicious}!Attributes {
         var attr = Attributes{};
         const result: FFIResult = @enumFromInt(c.rosu_pp_difficulty_checked_calculate(self.handle, beatmap.handle, @ptrCast(&attr)));
         try result.check();
